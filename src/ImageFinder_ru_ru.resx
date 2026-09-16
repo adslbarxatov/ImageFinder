@@ -118,7 +118,25 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="BadImageMessage" xml:space="preserve">
-    <value>(изображение не обработано)</value>
+    <value>(пропущено)</value>
+  </data>
+  <data name="BFlipFlag" xml:space="preserve">
+    <value>Оба отражения</value>
+  </data>
+  <data name="CW0Flag" xml:space="preserve">
+    <value>Без поворота</value>
+  </data>
+  <data name="CW90Flag" xml:space="preserve">
+    <value>Поворот на 90°</value>
+  </data>
+  <data name="CW180Flag" xml:space="preserve">
+    <value>Поворот на 180°</value>
+  </data>
+  <data name="CW270Flag" xml:space="preserve">
+    <value>Поворот на 270°</value>
+  </data>
+  <data name="HFlipFlag" xml:space="preserve">
+    <value>Гор. отражение</value>
   </data>
   <data name="ImageFilter" xml:space="preserve">
     <value>Файлы изображений (JPEG, PNG, GIF, BMP, TIF)|</value>
@@ -131,14 +149,23 @@
 {0:S}
 {1:D} из {2:D}</value>
   </data>
+  <data name="IncludeSubdirsFlag" xml:space="preserve">
+    <value>Включить подпапки</value>
+  </data>
   <data name="Label02" xml:space="preserve">
     <value>Укажите директорию с изображениями для поиска совпадений</value>
+  </data>
+  <data name="Label03" xml:space="preserve">
+    <value>Укажите ожидаемые состояния изображений</value>
   </data>
   <data name="Label05" xml:space="preserve">
     <value>Результаты (по степени совпадения с образцом):</value>
   </data>
   <data name="MOptions" xml:space="preserve">
     <value>&amp;Опции</value>
+  </data>
+  <data name="NoFlipFlag" xml:space="preserve">
+    <value>Без отражения</value>
   </data>
   <data name="NoImagesError" xml:space="preserve">
     <value>В указанной директории отсутствуют изображения поддерживаемых форматов</value>
@@ -154,5 +181,8 @@
   </data>
   <data name="StartSearch" xml:space="preserve">
     <value>Начать поиск</value>
+  </data>
+  <data name="VFlipFlag" xml:space="preserve">
+    <value>Верт. отражение</value>
   </data>
 </root>

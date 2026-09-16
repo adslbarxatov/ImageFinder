@@ -1,8 +1,13 @@
 Image finder: changes log
 
 ToDo:
-- add comparison factor
-- add rotation and flip support
+- add 'any to any' mode
+
+Version 1.1:
+• Added support for rotation and flip states of target images;
+• Added the ability to skip subdirectories;
+• Removed the comparison factor (it has no positive effect on a result);
+• App can now remember its settings
 
 Version 1.0:
 • Publication on GitHub

@@ -35,6 +35,20 @@ namespace RD_AAOW
 			this.Text = RDGenerics.DefaultAssemblyVisibleName;
 			RDGenerics.LoadWindowDimensions (this);
 
+			DirectoryPath.Text = ImageComparisonResult.ImagesDirectory;
+
+			ImageTransformTypes itt = ImageComparisonResult.TransformTypes;
+			CW0Flag.Checked = itt.HasFlag (ImageTransformTypes.CW0);
+			CW90Flag.Checked = itt.HasFlag (ImageTransformTypes.CW90);
+			CW180Flag.Checked = itt.HasFlag (ImageTransformTypes.CW180);
+			CW270Flag.Checked = itt.HasFlag (ImageTransformTypes.CW270);
+			NoFlipFlag.Checked = itt.HasFlag (ImageTransformTypes.NoFlip);
+			HFlipFlag.Checked = itt.HasFlag (ImageTransformTypes.HFlip);
+			VFlipFlag.Checked = itt.HasFlag (ImageTransformTypes.VFlip);
+			BFlipFlag.Checked = itt.HasFlag (ImageTransformTypes.BFlip);
+
+			IncludeSubdirsFlag.Checked = ImageComparisonResult.IncludeSubdirectories;
+
 			LocalizeForm (null, null);
 			}
 
@@ -46,7 +60,40 @@ namespace RD_AAOW
 
 		private void ImageFinderForm_FormClosing (object sender, FormClosingEventArgs e)
 			{
+			SaveSettings ();
 			RDGenerics.SaveWindowDimensions (this);
+			}
+
+		// Сохранение настроек обработки изображений
+		private void SaveSettings ()
+			{
+			ImageComparisonResult.ImagesDirectory = DirectoryPath.Text;
+
+			if (!CW0Flag.Checked && !CW90Flag.Checked && !CW180Flag.Checked && !CW270Flag.Checked)
+				CW0Flag.Checked = true;
+			if (!NoFlipFlag.Checked && !HFlipFlag.Checked && !VFlipFlag.Checked && !BFlipFlag.Checked)
+				NoFlipFlag.Checked = true;
+
+			ImageTransformTypes itt = 0x00;
+			if (CW0Flag.Checked)
+				itt |= ImageTransformTypes.CW0;
+			if (CW90Flag.Checked)
+				itt |= ImageTransformTypes.CW90;
+			if (CW180Flag.Checked)
+				itt |= ImageTransformTypes.CW180;
+			if (CW270Flag.Checked)
+				itt |= ImageTransformTypes.CW270;
+			if (NoFlipFlag.Checked)
+				itt |= ImageTransformTypes.NoFlip;
+			if (HFlipFlag.Checked)
+				itt |= ImageTransformTypes.HFlip;
+			if (VFlipFlag.Checked)
+				itt |= ImageTransformTypes.VFlip;
+			if (BFlipFlag.Checked)
+				itt |= ImageTransformTypes.BFlip;
+			ImageComparisonResult.TransformTypes = itt;
+
+			ImageComparisonResult.IncludeSubdirectories = IncludeSubdirsFlag.Checked;
 			}
 
 		// Справочные сведения
@@ -65,11 +112,34 @@ namespace RD_AAOW
 			RDLocale.SetDefaultControlText (MExit, RDLDefaultTexts.Button_Exit);
 			RDLocale.SetDefaultControlText (MAbout, RDLDefaultTexts.Control_AppAbout);
 			RDLocale.SetDefaultControlText (MLanguage, RDLDefaultTexts.Control_InterfaceLanguage);
+			
 			RDLocale.SetControlText (MOptions);
 			RDLocale.SetControlText (StartSearch);
 			RDLocale.SetControlText (Label05);
 			RDLocale.SetControlText (SelectImage);
 			RDLocale.SetControlText (Label02);
+
+			RDLocale.SetControlText (Label03);
+			
+			RDLocale.SetControlText (CW0Flag);
+			CW0Flag.Text = "α: " + CW0Flag.Text;
+			RDLocale.SetControlText (CW90Flag);
+			CW90Flag.Text = "β: " + CW90Flag.Text;
+			RDLocale.SetControlText (CW180Flag);
+			CW180Flag.Text = "δ: " + CW180Flag.Text;
+			RDLocale.SetControlText (CW270Flag);
+			CW270Flag.Text = "θ: " + CW270Flag.Text;
+
+			RDLocale.SetControlText (NoFlipFlag);
+			NoFlipFlag.Text = "λ: " + NoFlipFlag.Text;
+			RDLocale.SetControlText (HFlipFlag);
+			HFlipFlag.Text = "ξ: " + HFlipFlag.Text;
+			RDLocale.SetControlText (VFlipFlag);
+			VFlipFlag.Text = "ψ: " + VFlipFlag.Text;
+			RDLocale.SetControlText (BFlipFlag);
+			BFlipFlag.Text = "ω: " + BFlipFlag.Text;
+
+			RDLocale.SetControlText (IncludeSubdirsFlag);
 
 			OFDialog.Filter = RDLocale.GetText ("ImageFilter");
 			for (int i = 0; i < supportedImageFormats.Length; i++)
@@ -112,17 +182,9 @@ namespace RD_AAOW
 
 			// Обработка
 			sampleHash = ImageComparisonResult.GetImageHash (b2);
-
-			/*int w = b.Width * LoadedPicture.Height / b.Height;
-			LoadedPicture.BackgroundImage = new Bitmap (b, w, LoadedPicture.Height);
-			b.Dispose ();*/
 			LoadedPicture.BackgroundImage = b2;
 
 			CheckSearch ();
-			/*byte[] data2 = File.ReadAllBytes (RDGenerics.StartupPath + "1.dat");
-
-			double c = ImageMath.CompareHash (data, data2);
-			c *= 100;*/
 			}
 
 		// Выбор директории с изображениями
@@ -154,14 +216,15 @@ namespace RD_AAOW
 			{
 			// Сбор списка файлов
 			LoadedPicture.Visible = ViewBox.Visible = false;
-
 			imageFiles.Clear ();
+			SaveSettings ();
+
 			for (int i = 0; i < supportedImageFormats.Length; i++)
 				{
 				try
 					{
 					imageFiles.AddRange (Directory.GetFiles (DirectoryPath.Text, "*." + supportedImageFormats[i],
-						SearchOption.AllDirectories));
+						ImageComparisonResult.IncludeSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
 					}
 				catch { }
 				}
@@ -193,16 +256,14 @@ namespace RD_AAOW
 
 			for (int i = 0; (i < comparisonResults.Count) && (i < maxResults); i++)
 				{
-				/*string line = comparisonResults[i].ImageName + ": " +
-					comparisonResults[i].ComparisonResult;*/
-				string line = comparisonResults[i].ComparisonResult;
+				string result = comparisonResults[i].ComparisonResult;
 
 				if (!comparisonResults[i].IsInited)
-					line += " " + RDLocale.GetText ("BadImageMessage");
-				/*else if ((i > 0) && (line == comparisonResults[i - 1].ComparisonResult))
-					line += " " + RDLocale.GetText ("PossibleMatchMessage");*/
+					result += " " + RDLocale.GetText ("BadImageMessage");
 
-				ResultsList.Items.Add (comparisonResults[i].ImageName + ": " + line);
+				string name = comparisonResults[i].ImageName.PadRight (30) + " ".PadLeft (3) + "[" +
+					comparisonResults[i].ImageTransformType + "]" + " ".PadLeft (8);
+				ResultsList.Items.Add (name + result);
 				}
 
 			// Отображение
@@ -223,26 +284,32 @@ namespace RD_AAOW
 			comparisonResults.Clear ();
 
 			// Выполнение
+			ImageTransformTypes[] itts = ImageComparisonResult.GetTransformTypes ();
+
 			for (int i = 0; i < imageFiles.Count; i++)
 				{
 				bw.ReportProgress ((int)((i + 1) * RDWorkerForm.ProgressBarSize / imageFiles.Count),
 					string.Format (RDLocale.GetText ("ImageProcessingMessage"), Path.GetFileName (imageFiles[i]),
-					i + 1, imageFiles.Count));  // Возврат прогресса
+					i + 1, imageFiles.Count));	// Возврат прогресса
 
 				// Добавление
-				comparisonResults.Add (new ImageComparisonResult (imageFiles[i]));
-				if (!comparisonResults[i].IsInited)
-					continue;
-
-				if (!comparisonResults[i].MakeComparison (sampleHash))
-					continue;
-
-				// Завершение работы, если получено требование от диалога
-				if (bw.CancellationPending)
+				for (int t = 0; t < itts.Length; t++)
 					{
-					e.Result = 1;
-					e.Cancel = true;
-					return;
+					comparisonResults.Add (new ImageComparisonResult (imageFiles[i], itts[t]));
+					int idx = comparisonResults.Count - 1;
+					if (!comparisonResults[idx].IsInited)
+						continue;
+
+					if (!comparisonResults[idx].MakeComparison (sampleHash))
+						continue;
+
+					// Завершение работы, если получено требование от диалога
+					if (bw.CancellationPending)
+						{
+						e.Result = 1;
+						e.Cancel = true;
+						return;
+						}
 					}
 				}
 

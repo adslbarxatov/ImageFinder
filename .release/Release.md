@@ -1,11 +1,17 @@
 _en_us_
 
-- Initial release on GitHub
+- Added support for rotation and flip states of target images;
+- Added the ability to skip subdirectories;
+- Removed the comparison factor (it has no positive effect on a result);
+- App can now remember its settings
 
 ⁂
 
 _ru_ru_
 
-- Начальный релиз на GitHub
+- Добавлена поддержка состояний поворота и отражения целевых изображений;
+- Добавлена возможность пропускать подкаталоги;
+- Удалён коэффициент сравнения (он не оказывает положительного влияния на результат);
+- Приложение теперь запоминает настройки
 
 ⁂
