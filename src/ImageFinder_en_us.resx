@@ -135,6 +135,9 @@
   <data name="CW270Flag" xml:space="preserve">
     <value>270° rotation</value>
   </data>
+  <data name="EachToEachRadio" xml:space="preserve">
+    <value>Compare each to each</value>
+  </data>
   <data name="HFlipFlag" xml:space="preserve">
     <value>Hor. flip</value>
   </data>
@@ -168,10 +171,15 @@
     <value>No flip</value>
   </data>
   <data name="NoImagesError" xml:space="preserve">
-    <value>There are no images in supported formats in the specified directory</value>
+    <value>The specified directory doesn’t contain a sufficient number of images in supported formats for comparison</value>
   </data>
-  <data name="PossibleMatchMessage" xml:space="preserve">
-    <value>(possible duplication)</value>
+  <data name="OneToAllRadio" xml:space="preserve">
+    <value>Compare with sample</value>
+  </data>
+  <data name="PairProcessingMessage" xml:space="preserve">
+    <value>Processing files pair
+{0:S} × {1:S}
+{2:D} out of {3:D}</value>
   </data>
   <data name="SearchInterruptedMessage" xml:space="preserve">
     <value>Search interrupted by user</value>

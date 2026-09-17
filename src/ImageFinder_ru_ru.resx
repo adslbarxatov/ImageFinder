@@ -135,6 +135,9 @@
   <data name="CW270Flag" xml:space="preserve">
     <value>Поворот на 270°</value>
   </data>
+  <data name="EachToEachRadio" xml:space="preserve">
+    <value>Сравнение друг с другом</value>
+  </data>
   <data name="HFlipFlag" xml:space="preserve">
     <value>Гор. отражение</value>
   </data>
@@ -168,10 +171,15 @@
     <value>Без отражения</value>
   </data>
   <data name="NoImagesError" xml:space="preserve">
-    <value>В указанной директории отсутствуют изображения поддерживаемых форматов</value>
+    <value>В указанной директории отсутствуют изображения поддерживаемых форматов в количестве, достаточном для сравнения</value>
   </data>
-  <data name="PossibleMatchMessage" xml:space="preserve">
-    <value>(возможно, дубль)</value>
+  <data name="OneToAllRadio" xml:space="preserve">
+    <value>Сравнение с образцом</value>
+  </data>
+  <data name="PairProcessingMessage" xml:space="preserve">
+    <value>Обработка пары файлов
+{0:S} × {1:S}
+{2:D} из {3:D}</value>
   </data>
   <data name="SearchInterruptedMessage" xml:space="preserve">
     <value>Поиск прерван пользователем</value>

@@ -1,7 +1,10 @@
 Image finder: changes log
 
-ToDo:
-- add 'any to any' mode
+Version 1.2:
+• Implemented 'all-to-all' comparison modes: images can now be compared against
+  one another to find the most similar ones;
+• Fixed incorrect 90° rotation direction;
+• Fixed minor interface bugs
 
 Version 1.1:
 • Added support for rotation and flip states of target images;
