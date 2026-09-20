@@ -1,5 +1,10 @@
 Image finder: changes log
 
+ToDo:
+- Отключение видимости полей с картинками при чтении пустой папки
+- Просмотр полного пути к изображению каким-либо способом
+- Обработка альфа-канала
+
 Version 1.2:
 • Implemented 'all-to-all' comparison modes: images can now be compared against
   one another to find the most similar ones;
