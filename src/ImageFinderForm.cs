@@ -224,10 +224,10 @@ namespace RD_AAOW
 		// Инициализация поиска
 		private void StartSearch_Click (object sender, EventArgs e)
 			{
-			// Сброс состояния
-			LoadedPicture.Visible = ViewBox.Visible = false;
+			// Получение списка файлов
+			/*LoadedPicture.Visible = ViewBox.Visible = false;*/
 			imageFiles.Clear ();
-			SaveSettings ();
+			/*SaveSettings ();*/
 
 			// Сбор списка файлов
 			for (int i = 0; i < supportedImageFormats.Length; i++)
@@ -235,7 +235,7 @@ namespace RD_AAOW
 				try
 					{
 					imageFiles.AddRange (Directory.GetFiles (DirectoryPath.Text, "*." + supportedImageFormats[i],
-						ImageComparisonResult.IncludeSubdirectories ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
+						IncludeSubdirsFlag.Checked ? SearchOption.AllDirectories : SearchOption.TopDirectoryOnly));
 					}
 				catch { }
 				}
@@ -246,6 +246,10 @@ namespace RD_AAOW
 					"NoImagesError");
 				return;
 				}
+
+			// Блокировка интерфейса
+			SaveSettings ();
+			LoadedPicture.Visible = ViewBox.Visible = false;
 
 			// Запуск в режиме с образцом
 			if (OneToAllRadio.Checked)
@@ -399,9 +403,6 @@ namespace RD_AAOW
 				for (int t = 0; t < itts.Length; t++)
 					{
 					oneToAllResults.Add (new ImageComparisonResult (imageFiles[i], itts[t]));
-					/*int idx = oneToAllResults.Count - 1;
-					if (!oneToAllResults[idx].IsInited)
-						continue;*/
 
 					// Сравнение на этом шаге не проводится
 
@@ -496,14 +497,26 @@ namespace RD_AAOW
 					return;
 
 				ViewBox.BackgroundImage = oneToAllResults[idx].GetImage ();
+
+				FirstFileButton.Text = oneToAllResults[idx].FullPath;
+				FirstFileButton.Enabled = File.Exists (oneToAllResults[idx].FullPath);
+				SecondFileButton.Text = "";
+				SecondFileButton.Enabled = false;
 				}
 			else
 				{
 				if (eachToEachResults[idx].ComparisonResult == 0.0)
 					return;
 
-				LoadedPicture.BackgroundImage = oneToAllResults[(int)eachToEachResults[idx].FirstImageIndex].GetImage ();
-				ViewBox.BackgroundImage = oneToAllResults[(int)eachToEachResults[idx].SecondImageIndex].GetImage ();
+				int fidx = (int)eachToEachResults[idx].FirstImageIndex;
+				LoadedPicture.BackgroundImage = oneToAllResults[fidx].GetImage ();
+				FirstFileButton.Text = oneToAllResults[fidx].FullPath;
+				FirstFileButton.Enabled = File.Exists (oneToAllResults[fidx].FullPath);
+
+				fidx = (int)eachToEachResults[idx].SecondImageIndex;
+				ViewBox.BackgroundImage = oneToAllResults[fidx].GetImage ();
+				SecondFileButton.Text = oneToAllResults[fidx].FullPath;
+				SecondFileButton.Enabled = File.Exists (oneToAllResults[fidx].FullPath);
 				}
 			}
 
@@ -511,8 +524,49 @@ namespace RD_AAOW
 		private void OneToAllRadio_CheckedChanged (object sender, EventArgs e)
 			{
 			SelectImage.Enabled = OneToAllRadio.Checked;
-			/*ResultsList.Enabled = false;*/
 			CheckSearch ();
+			}
+
+		// Удаление дубликатов
+		private void FirstFileButton_Click (object sender, EventArgs e)
+			{
+			// Запрос варианта
+			Button b = (Button)sender;
+			RDMessageButtons res = RDInterface.MessageBox (RDMessageFlags.Warning | RDMessageFlags.CenterText | RDMessageFlags.LockSmallSize,
+				string.Format (RDLocale.GetText ("RemoveFileMessage"), Path.GetFileName (b.Text)),
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Cancel),
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Replace),
+				RDLocale.GetDefaultText (RDLDefaultTexts.Button_Delete));
+
+			// Отмена
+			if (res == RDMessageButtons.ButtonOne)
+				return;
+
+			// Удаление
+			if (res == RDMessageButtons.ButtonOne)
+				{
+				try
+					{
+					File.Delete (b.Text);
+					b.Enabled = false;
+					}
+				catch { }
+				return;
+				}
+
+			// Изменение имени
+			string path = Path.GetDirectoryName (b.Text);
+			if (!path.EndsWith ('\\'))
+				path += "\\";
+			path += Path.GetFileNameWithoutExtension (b.Text);
+			string ext = Path.GetExtension (b.Text);
+
+			try
+				{
+				File.Move (path + ext, path + ".bak");
+				b.Text = path + ".bak";
+				}
+			catch { }
 			}
 		}
 	}

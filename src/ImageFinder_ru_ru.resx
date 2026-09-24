@@ -181,6 +181,9 @@
 {0:S} × {1:S}
 {2:D} из {3:D}</value>
   </data>
+  <data name="RemoveFileMessage" xml:space="preserve">
+    <value>Хотите удалить файл «{0:S}» или заменить его расширение на .bak?</value>
+  </data>
   <data name="SearchInterruptedMessage" xml:space="preserve">
     <value>Поиск прерван пользователем</value>
   </data>

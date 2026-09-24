@@ -1,9 +1,11 @@
 Image finder: changes log
 
-ToDo:
-- Отключение видимости полей с картинками при чтении пустой папки
-- Просмотр полного пути к изображению каким-либо способом
-- Обработка альфа-канала
+Version 1.3:
+• Added support for alpha-channel;
+• Fixed minor interface bugs;
+• Added the ability to view the full path to file;
+• Added the ability to delete file or replace its extension to .bak to make it
+  invisible for further comparisons
 
 Version 1.2:
 • Implemented 'all-to-all' comparison modes: images can now be compared against

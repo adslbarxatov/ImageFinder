@@ -181,6 +181,9 @@
 {0:S} × {1:S}
 {2:D} out of {3:D}</value>
   </data>
+  <data name="RemoveFileMessage" xml:space="preserve">
+    <value>Do you want to delete file “{0:S}” or replace its extension with .bak?</value>
+  </data>
   <data name="SearchInterruptedMessage" xml:space="preserve">
     <value>Search interrupted by user</value>
   </data>
