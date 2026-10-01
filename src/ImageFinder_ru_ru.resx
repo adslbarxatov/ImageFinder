@@ -181,6 +181,9 @@
 {0:S} × {1:S}
 {2:D} из {3:D}</value>
   </data>
+  <data name="PrecisionLabel" xml:space="preserve">
+    <value>Точность сравнения</value>
+  </data>
   <data name="RemoveFileMessage" xml:space="preserve">
     <value>Хотите удалить файл «{0:S}» или заменить его расширение на .bak?</value>
   </data>

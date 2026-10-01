@@ -1,5 +1,8 @@
 Image finder: changes log
 
+Version 1.4:
+• Implemented the precision coefficient for the comparison algorithm
+
 Version 1.3:
 • Added support for alpha-channel;
 • Fixed minor interface bugs;

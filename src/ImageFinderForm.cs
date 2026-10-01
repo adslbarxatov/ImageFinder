@@ -55,6 +55,8 @@ namespace RD_AAOW
 				OneToAllRadio.Checked = true;
 			OneToAllRadio_CheckedChanged (null, null);
 
+			PrecisionTrack.Value = ImageComparisonResult.PresisionMultiplier;
+
 			LocalizeForm (null, null);
 			}
 
@@ -101,6 +103,8 @@ namespace RD_AAOW
 
 			ImageComparisonResult.IncludeSubdirectories = IncludeSubdirsFlag.Checked;
 			ImageComparisonResult.EachToEachMode = EachToEachRadio.Checked;
+
+			ImageComparisonResult.PresisionMultiplier = (byte)PrecisionTrack.Value;
 			}
 
 		// Справочные сведения
@@ -150,6 +154,8 @@ namespace RD_AAOW
 
 			RDLocale.SetControlText (OneToAllRadio);
 			RDLocale.SetControlText (EachToEachRadio);
+
+			RDLocale.SetControlText (PrecisionLabel);
 
 			OFDialog.Filter = RDLocale.GetText ("ImageFilter");
 			for (int i = 0; i < supportedImageFormats.Length; i++)
