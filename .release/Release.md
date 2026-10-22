@@ -1,21 +1,25 @@
 _en_us_
 
+- Added a user videoguide;
+- Added a direct image search mode based on width, height, and resolution;
+- Addressed certain scenarios where the interface might have behaved unexpectedly;
+- Increased the percentage-based deviation threshold for image pairs with significant differences;
+- Removed matching image pairs from the results when performing an “all-to-all” search;
 - Implemented the precision coefficient for the comparison algorithm;
 - Added alpha channel support;
-- Fixed some minor interface bugs;
-- Added the ability to view the full file path;
-- Added the ability to delete a file or change its extension to `.bak` to make it invisible to subsequent comparisons;
-- Implemented 'all-to-all' comparison mode: images can now be compared against one another to find the most similar ones
+- Fixed some minor interface bugs
 
 ⁂
 
 _ru_ru_
 
+- Добавлено видеоруководство пользователя;
+- Добавлен режим прямого поиска изображений по ширине, высоте и разрешению;
+- Обработаны некоторые ситуации, при которых поведение интерфейса могло быть некорректным;
+- Усилено процентное отклонение для пар изображений, имеющих значительные отличия;
+- При поиске в режиме «каждое с каждым» из результатов убраны совпадающие пары изображений;
 - Реализован коэффициент точности для алгоритма сравнения;
 - Добавлена поддержка альфа-канала;
-- Исправлены мелкие ошибки интерфейса;
-- Добавлена возможность просмотра полного пути к файлу;
-- Добавлена возможность удалить файл или изменить его расширение на `.bak`, чтобы сделать его невидимым для последующих сравнений;
-- Реализован режим «каждое с каждым»: теперь можно сравнивать изображения друг с другом в указанной папке для поиска наиболее похожих
+- Исправлены мелкие ошибки интерфейса
 
 ⁂

@@ -138,6 +138,12 @@
   <data name="EachToEachRadio" xml:space="preserve">
     <value>Сравнение друг с другом</value>
   </data>
+  <data name="FromFlag" xml:space="preserve">
+    <value>от</value>
+  </data>
+  <data name="HeightLabel" xml:space="preserve">
+    <value>Высота:</value>
+  </data>
   <data name="HFlipFlag" xml:space="preserve">
     <value>Гор. отражение</value>
   </data>
@@ -187,8 +193,14 @@
   <data name="RemoveFileMessage" xml:space="preserve">
     <value>Хотите удалить файл «{0:S}» или заменить его расширение на .bak?</value>
   </data>
+  <data name="ResolutionLabel" xml:space="preserve">
+    <value>Разрешение:</value>
+  </data>
   <data name="SearchInterruptedMessage" xml:space="preserve">
     <value>Поиск прерван пользователем</value>
+  </data>
+  <data name="SearchRadio" xml:space="preserve">
+    <value>Поиск</value>
   </data>
   <data name="SelectImage" xml:space="preserve">
     <value>Укажите изображение-образец</value>
@@ -196,7 +208,13 @@
   <data name="StartSearch" xml:space="preserve">
     <value>Начать поиск</value>
   </data>
+  <data name="ToFlag" xml:space="preserve">
+    <value>до</value>
+  </data>
   <data name="VFlipFlag" xml:space="preserve">
     <value>Верт. отражение</value>
+  </data>
+  <data name="WidthLabel" xml:space="preserve">
+    <value>Ширина:</value>
   </data>
 </root>

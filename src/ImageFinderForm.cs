@@ -14,8 +14,11 @@ namespace RD_AAOW
 		{
 		// Переменные
 		private byte[] sampleHash;
+		private bool sampleHashOutdated = true;
+
 		private List<ImageComparisonResult> oneToAllResults = [];
 		private List<EachToEachComparisonResult> eachToEachResults = [];
+		private List<DirectSearchResult> directResults = [];
 		private List<string> imageFiles = [];
 
 		private string[] supportedImageFormats = [
@@ -36,6 +39,8 @@ namespace RD_AAOW
 			this.Text = RDGenerics.DefaultAssemblyVisibleName;
 			RDGenerics.LoadWindowDimensions (this);
 
+			SearchPanel.Location = ComparisonPanel.Location;
+
 			DirectoryPath.Text = ImageComparisonResult.ImagesDirectory;
 
 			ImageTransformTypes itt = ImageComparisonResult.TransformTypes;
@@ -49,13 +54,52 @@ namespace RD_AAOW
 			BFlipFlag.Checked = itt.HasFlag (ImageTransformTypes.BFlip);
 
 			IncludeSubdirsFlag.Checked = ImageComparisonResult.IncludeSubdirectories;
-			if (ImageComparisonResult.EachToEachMode)
+			/*if (ImageComparisonResult.EachToEachMode)
 				EachToEachRadio.Checked = true;
 			else
-				OneToAllRadio.Checked = true;
+				OneToAllRadio.Checked = true;*/
+			switch (ImageComparisonResult.SearchMode)
+				{
+				case SearchModes.OneToAll:
+					OneToAllRadio.Checked = true;
+					break;
+
+				case SearchModes.EachToEach:
+				default:
+					EachToEachRadio.Checked = true;
+					break;
+
+				case SearchModes.DirectSearch:
+					SearchRadio.Checked = true;
+					break;
+				}
 			OneToAllRadio_CheckedChanged (null, null);
 
 			PrecisionTrack.Value = ImageComparisonResult.PresisionMultiplier;
+
+			WidthFromFlag.Checked = (DirectSearchResult.WidthMinimum > 0);
+			if (WidthFromFlag.Checked)
+				WidthFromField.Value = DirectSearchResult.WidthMinimum;
+
+			WidthToFlag.Checked = (DirectSearchResult.WidthMaximum > 0);
+			if (WidthToFlag.Checked)
+				WidthToField.Value = DirectSearchResult.WidthMaximum;
+
+			HeightFromFlag.Checked = (DirectSearchResult.HeightMinimum > 0);
+			if (HeightFromFlag.Checked)
+				HeightFromField.Value = DirectSearchResult.HeightMinimum;
+
+			HeightToFlag.Checked = (DirectSearchResult.HeightMaximum > 0);
+			if (HeightToFlag.Checked)
+				HeightToField.Value = DirectSearchResult.HeightMaximum;
+
+			ResolutionFromFlag.Checked = (DirectSearchResult.ResolutionMinimum > 0);
+			if (ResolutionFromFlag.Checked)
+				ResolutionFromField.Value = DirectSearchResult.ResolutionMinimum;
+
+			ResolutionToFlag.Checked = (DirectSearchResult.ResolutionMaximum > 0);
+			if (ResolutionToFlag.Checked)
+				ResolutionToField.Value = DirectSearchResult.ResolutionMaximum;
 
 			LocalizeForm (null, null);
 			}
@@ -102,9 +146,46 @@ namespace RD_AAOW
 			ImageComparisonResult.TransformTypes = itt;
 
 			ImageComparisonResult.IncludeSubdirectories = IncludeSubdirsFlag.Checked;
-			ImageComparisonResult.EachToEachMode = EachToEachRadio.Checked;
+
+			/*ImageComparisonResult.EachToEachMode = EachToEachRadio.Checked;*/
+			if (OneToAllRadio.Checked)
+				ImageComparisonResult.SearchMode = SearchModes.OneToAll;
+			else if (SearchRadio.Checked)
+				ImageComparisonResult.SearchMode = SearchModes.DirectSearch;
+			else
+				ImageComparisonResult.SearchMode = SearchModes.EachToEach;
 
 			ImageComparisonResult.PresisionMultiplier = (byte)PrecisionTrack.Value;
+
+			if (WidthFromFlag.Checked)
+				DirectSearchResult.WidthMinimum = (uint)WidthFromField.Value;
+			else
+				DirectSearchResult.WidthMinimum = 0;
+
+			if (WidthToFlag.Checked)
+				DirectSearchResult.WidthMaximum = (uint)WidthToField.Value;
+			else
+				DirectSearchResult.WidthMaximum = 0;
+
+			if (HeightFromFlag.Checked)
+				DirectSearchResult.HeightMinimum = (uint)HeightFromField.Value;
+			else
+				DirectSearchResult.HeightMinimum = 0;
+
+			if (HeightToFlag.Checked)
+				DirectSearchResult.HeightMaximum = (uint)HeightToField.Value;
+			else
+				DirectSearchResult.HeightMaximum = 0;
+
+			if (ResolutionFromFlag.Checked)
+				DirectSearchResult.ResolutionMinimum = (uint)ResolutionFromField.Value;
+			else
+				DirectSearchResult.ResolutionMinimum = 0;
+
+			if (ResolutionToFlag.Checked)
+				DirectSearchResult.ResolutionMaximum = (uint)ResolutionToField.Value;
+			else
+				DirectSearchResult.ResolutionMaximum = 0;
 			}
 
 		// Справочные сведения
@@ -154,6 +235,7 @@ namespace RD_AAOW
 
 			RDLocale.SetControlText (OneToAllRadio);
 			RDLocale.SetControlText (EachToEachRadio);
+			RDLocale.SetControlText (SearchRadio);
 
 			RDLocale.SetControlText (PrecisionLabel);
 
@@ -161,6 +243,16 @@ namespace RD_AAOW
 			for (int i = 0; i < supportedImageFormats.Length; i++)
 				OFDialog.Filter += ("*." + supportedImageFormats[i] +
 					(i < supportedImageFormats.Length - 1 ? ";" : ""));
+
+			RDLocale.SetControlText (WidthLabel);
+			RDLocale.SetControlText (WidthFromFlag, "FromFlag");
+			RDLocale.SetControlText (WidthToFlag, "ToFlag");
+			RDLocale.SetControlText (HeightLabel);
+			RDLocale.SetControlText (HeightFromFlag, "FromFlag");
+			RDLocale.SetControlText (HeightToFlag, "ToFlag");
+			RDLocale.SetControlText (ResolutionLabel);
+			RDLocale.SetControlText (ResolutionFromFlag, "FromFlag");
+			RDLocale.SetControlText (ResolutionToFlag, "ToFlag");
 			}
 
 		// Выбор изображения
@@ -198,6 +290,7 @@ namespace RD_AAOW
 
 			// Обработка
 			sampleHash = ImageComparisonResult.GetImageHash (b2);
+			sampleHashOutdated = false;
 			LoadedPicture.BackgroundImage = b2;
 
 			CheckSearch ();
@@ -218,7 +311,7 @@ namespace RD_AAOW
 		// Разблокировка кнопки поиска
 		private void CheckSearch ()
 			{
-			StartSearch.Enabled = (((sampleHash != null) || EachToEachRadio.Checked) &&
+			StartSearch.Enabled = (((sampleHash != null) || !OneToAllRadio.Checked) &&
 				Directory.Exists (DirectoryPath.Text));
 			}
 
@@ -231,9 +324,7 @@ namespace RD_AAOW
 		private void StartSearch_Click (object sender, EventArgs e)
 			{
 			// Получение списка файлов
-			/*LoadedPicture.Visible = ViewBox.Visible = false;*/
 			imageFiles.Clear ();
-			/*SaveSettings ();*/
 
 			// Сбор списка файлов
 			for (int i = 0; i < supportedImageFormats.Length; i++)
@@ -260,6 +351,12 @@ namespace RD_AAOW
 			// Запуск в режиме с образцом
 			if (OneToAllRadio.Checked)
 				{
+				if (sampleHashOutdated)
+					{
+					sampleHash = ImageComparisonResult.GetImageHash ((Bitmap)LoadedPicture.BackgroundImage);
+					sampleHashOutdated = false;
+					}
+
 				// Пропуск образца, если он оказался в той же директории
 				int idx = imageFiles.IndexOf (OFDialog.FileName);
 				if (idx >= 0)
@@ -291,6 +388,38 @@ namespace RD_AAOW
 					name = name.PadRight (30);
 					ResultsList.Items.Add (name + " ".PadLeft (3) + "[" +
 						oneToAllResults[i].ImageTransformType + "]" + " ".PadLeft (8) + result);
+					}
+				}
+
+			// Запуск в режиме прямого поиска
+			else if (SearchRadio.Checked)
+				{
+				// Выполнение
+				RDInterface.RunWork (DirectSearch, null, "...", RDRunWorkFlags.AllowOperationAbort |
+					RDRunWorkFlags.CaptionInTheMiddle);
+				if (RDInterface.WorkResultAsInteger != 0)
+					{
+					RDInterface.LocalizedMessageBox (RDMessageFlags.CenterText | RDMessageFlags.Warning,
+						"SearchInterruptedMessage");
+					}
+
+				// Загрузка результатов
+				directResults.Sort ();
+				ResultsList.Items.Clear ();
+
+				for (int i = 0; i < directResults.Count; i++)
+					{
+					string name = directResults[i].ImageName;
+					if (name.Length > 30)
+						name = name.Substring (0, 29) + "…";
+					name = name.PadRight (30);
+
+					string size = directResults[i].ImageWidth.ToString () + " × " +
+						directResults[i].ImageHeight.ToString ();
+					size = size.PadRight (15);
+
+					ResultsList.Items.Add (name + size +
+						directResults[i].ImageResolution.ToString () + " dpi");
 					}
 				}
 
@@ -339,6 +468,32 @@ namespace RD_AAOW
 			ResultsList.Enabled = true;
 			LoadedPicture.Visible = ViewBox.Visible = true;
 
+			// Почти во всех режимах требуют сброса на случай пустого списка результатов
+			if (ImageComparisonResult.SearchMode == SearchModes.DirectSearch)
+				{
+				FirstFileButton.Text = "";
+				FirstFileButton.Enabled = false;
+
+				if (ViewBox.BackgroundImage != null)
+					{
+					ViewBox.BackgroundImage.Dispose ();
+					ViewBox.BackgroundImage = null;
+					}
+				}
+
+			if (ImageComparisonResult.SearchMode != SearchModes.EachToEach)
+				{
+				SecondFileButton.Text = "";
+				SecondFileButton.Enabled = false;
+				}
+
+			if ((ImageComparisonResult.SearchMode != SearchModes.OneToAll) && (LoadedPicture.BackgroundImage != null))
+				{
+				LoadedPicture.BackgroundImage.Dispose ();
+				LoadedPicture.BackgroundImage = null;
+				}
+
+			// Переход к первому результату
 			if (ResultsList.Items.Count > 0)
 				{
 				ResultsList.SelectedIndex = 0;
@@ -455,7 +610,9 @@ namespace RD_AAOW
 					// Сравнение
 					EachToEachComparisonResult etecr;
 					etecr.FirstImageIndex = (uint)i1;
+					etecr.FirstImagePath = oneToAllResults[i1].FullPath;
 					etecr.SecondImageIndex = (uint)i2;
+					etecr.SecondImagePath = oneToAllResults[i2].FullPath;
 
 					if (!oneToAllResults[i1].IsInited || !oneToAllResults[i2].IsInited)
 						etecr.ComparisonResult = 0.0;
@@ -463,13 +620,56 @@ namespace RD_AAOW
 						etecr.ComparisonResult = oneToAllResults[i1].MakeComparison (oneToAllResults[i2].ImageHash);
 
 					// Отсечка заведомо лишних результатов
-					eachToEachResults.Add (etecr);
-					if ((item % maxResults == 0) && (item > maxResults))
+					if (!eachToEachResults.Contains (etecr))
 						{
-						eachToEachResults.Sort ();
-						eachToEachResults.RemoveRange ((int)maxResults, eachToEachResults.Count - (int)maxResults);
+						eachToEachResults.Add (etecr);
+						if ((item % maxResults == 0) && (item > maxResults))
+							{
+							eachToEachResults.Sort ();
+							eachToEachResults.RemoveRange ((int)maxResults, eachToEachResults.Count - (int)maxResults);
+							}
 						}
 					}
+				}
+
+			// Завершено
+			e.Result = 0;
+			}
+
+		private void DirectSearch (object sender, DoWorkEventArgs e)
+			{
+			// Инициализация
+			BackgroundWorker bw = ((BackgroundWorker)sender);
+			directResults.Clear ();
+
+			// Выполнение
+			for (int i = 0; i < imageFiles.Count; i++)
+				{
+				// Возврат прогресса
+				bw.ReportProgress ((int)((i + 1) * RDWorkerForm.ProgressBarSize / imageFiles.Count),
+					string.Format (RDLocale.GetText ("ImageProcessingMessage"), Path.GetFileName (imageFiles[i]),
+					i + 1, imageFiles.Count));
+
+				// Проверка
+				DirectSearchResult dsr = new DirectSearchResult (imageFiles[i]);
+				if (!dsr.IsInited)
+					continue;
+
+				if ((DirectSearchResult.WidthMinimum > 0) && (dsr.ImageWidth < DirectSearchResult.WidthMinimum))
+					continue;
+				if ((DirectSearchResult.WidthMaximum > 0) && (dsr.ImageWidth > DirectSearchResult.WidthMaximum))
+					continue;
+				if ((DirectSearchResult.HeightMinimum > 0) && (dsr.ImageHeight < DirectSearchResult.HeightMinimum))
+					continue;
+				if ((DirectSearchResult.HeightMaximum > 0) && (dsr.ImageHeight > DirectSearchResult.HeightMaximum))
+					continue;
+				if ((DirectSearchResult.ResolutionMinimum > 0) && (dsr.ImageResolution < DirectSearchResult.ResolutionMinimum))
+					continue;
+				if ((DirectSearchResult.ResolutionMaximum > 0) && (dsr.ImageResolution > DirectSearchResult.ResolutionMaximum))
+					continue;
+
+				// Добавление
+				directResults.Add (dsr);
 				}
 
 			// Завершено
@@ -486,7 +686,8 @@ namespace RD_AAOW
 				ViewBox.BackgroundImage = null;
 				}
 
-			if (ImageComparisonResult.EachToEachMode && (LoadedPicture.BackgroundImage != null))
+			/*if (ImageComparisonResult.EachToEachMode && (LoadedPicture.BackgroundImage != null))*/
+			if ((ImageComparisonResult.SearchMode == SearchModes.EachToEach) && (LoadedPicture.BackgroundImage != null))
 				{
 				LoadedPicture.BackgroundImage.Dispose ();
 				LoadedPicture.BackgroundImage = null;
@@ -497,32 +698,47 @@ namespace RD_AAOW
 			if (idx < 0)
 				return;
 
-			if (!ImageComparisonResult.EachToEachMode)
+			/*if (!ImageComparisonResult.EachToEachMode)*/
+			switch (ImageComparisonResult.SearchMode)
 				{
-				if (!oneToAllResults[idx].IsInited)
-					return;
+				case SearchModes.OneToAll:
+					if (!oneToAllResults[idx].IsInited)
+						return;
 
-				ViewBox.BackgroundImage = oneToAllResults[idx].GetImage ();
+					ViewBox.BackgroundImage = oneToAllResults[idx].GetImage ();
 
-				FirstFileButton.Text = oneToAllResults[idx].FullPath;
-				FirstFileButton.Enabled = File.Exists (oneToAllResults[idx].FullPath);
-				SecondFileButton.Text = "";
-				SecondFileButton.Enabled = false;
-				}
-			else
-				{
-				if (eachToEachResults[idx].ComparisonResult == 0.0)
-					return;
+					FirstFileButton.Text = oneToAllResults[idx].FullPath;
+					FirstFileButton.Enabled = File.Exists (oneToAllResults[idx].FullPath);
+					/*SecondFileButton.Text = "";
+					SecondFileButton.Enabled = false;*/
+					break;
 
-				int fidx = (int)eachToEachResults[idx].FirstImageIndex;
-				LoadedPicture.BackgroundImage = oneToAllResults[fidx].GetImage ();
-				FirstFileButton.Text = oneToAllResults[fidx].FullPath;
-				FirstFileButton.Enabled = File.Exists (oneToAllResults[fidx].FullPath);
+				case SearchModes.EachToEach:
+					if (eachToEachResults[idx].ComparisonResult == 0.0)
+						return;
 
-				fidx = (int)eachToEachResults[idx].SecondImageIndex;
-				ViewBox.BackgroundImage = oneToAllResults[fidx].GetImage ();
-				SecondFileButton.Text = oneToAllResults[fidx].FullPath;
-				SecondFileButton.Enabled = File.Exists (oneToAllResults[fidx].FullPath);
+					int fidx = (int)eachToEachResults[idx].FirstImageIndex;
+					LoadedPicture.BackgroundImage = oneToAllResults[fidx].GetImage ();
+					FirstFileButton.Text = oneToAllResults[fidx].FullPath;
+					FirstFileButton.Enabled = File.Exists (oneToAllResults[fidx].FullPath);
+
+					fidx = (int)eachToEachResults[idx].SecondImageIndex;
+					ViewBox.BackgroundImage = oneToAllResults[fidx].GetImage ();
+					SecondFileButton.Text = oneToAllResults[fidx].FullPath;
+					SecondFileButton.Enabled = File.Exists (oneToAllResults[fidx].FullPath);
+					break;
+
+				case SearchModes.DirectSearch:
+					if (!directResults[idx].IsInited)
+						return;
+
+					ViewBox.BackgroundImage = directResults[idx].GetImage ();
+
+					FirstFileButton.Text = directResults[idx].FullPath;
+					FirstFileButton.Enabled = File.Exists (directResults[idx].FullPath);
+					/*SecondFileButton.Text = "";
+					SecondFileButton.Enabled = false;*/
+					break;
 				}
 			}
 
@@ -530,6 +746,9 @@ namespace RD_AAOW
 		private void OneToAllRadio_CheckedChanged (object sender, EventArgs e)
 			{
 			SelectImage.Enabled = OneToAllRadio.Checked;
+			SearchPanel.Visible = SearchRadio.Checked;
+			ComparisonPanel.Visible = !SearchRadio.Checked;
+
 			CheckSearch ();
 			}
 
@@ -573,6 +792,43 @@ namespace RD_AAOW
 				b.Text = path + ".bak";
 				}
 			catch { }
+			}
+
+		// Изменение флагов сравнения для прямого поиска
+		private void WidthFromFlag_CheckedChanged (object sender, EventArgs e)
+			{
+			WidthFromField.Enabled = WidthFromFlag.Checked;
+			}
+
+		private void WidthToFlag_CheckedChanged (object sender, EventArgs e)
+			{
+			WidthToField.Enabled = WidthToFlag.Checked;
+			}
+
+		private void HeightFromFlag_CheckedChanged (object sender, EventArgs e)
+			{
+			HeightFromField.Enabled = HeightFromFlag.Checked;
+			}
+
+		private void HeightToFlag_CheckedChanged (object sender, EventArgs e)
+			{
+			HeightToField.Enabled = HeightToFlag.Checked;
+			}
+
+		private void ResolutionFromFlag_CheckedChanged (object sender, EventArgs e)
+			{
+			ResolutionFromField.Enabled = ResolutionFromFlag.Checked;
+			}
+
+		private void ResolutionToFlag_CheckedChanged (object sender, EventArgs e)
+			{
+			ResolutionToField.Enabled = ResolutionToFlag.Checked;
+			}
+
+		// Случай изменения точности для режима сравнения с образцом
+		private void PrecisionTrack_Scroll (object sender, EventArgs e)
+			{
+			sampleHashOutdated = true;
 			}
 		}
 	}

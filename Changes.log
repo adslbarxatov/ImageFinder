@@ -1,7 +1,11 @@
 Image finder: changes log
 
-Version pending:
-- Added user videoguide
+Version 1.5:
+• Added a user videoguide;
+• Added a direct image search mode based on width, height, and resolution;
+• Addressed certain scenarios where the interface might have behaved unexpectedly;
+• Increased the percentage-based deviation threshold for image pairs with significant differences;
+• Removed matching image pairs from the results when performing an “all-to-all” search
 
 Version 1.4:
 • Implemented the precision coefficient for the comparison algorithm
